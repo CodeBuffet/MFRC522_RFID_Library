@@ -196,7 +196,7 @@ byte MFRC522::PCD_CalculateCRC(	byte *data,		///< In: Pointer to the data to tra
  * Initializes the MFRC522 chip.
  */
 
-void MFRC522::PCD_Init(byte gain[]) {
+void MFRC522::PCD_Init(byte gain) {
   if (digitalRead(_resetPowerDownPin) == LOW) { //The MFRC522 chip is in power down mode.
     digitalWrite(_resetPowerDownPin, HIGH); // Exit power down mode. This triggers a hard reset.
 
@@ -218,7 +218,7 @@ void MFRC522::PCD_Init(byte gain[]) {
 
   PCD_WriteRegister(TxASKReg, 0x40);        // Default 0x00. Force a 100 % ASK modulation independent of the ModGsPReg register setting
   PCD_WriteRegister(ModeReg, 0x3D);     // Default 0x3F. Set the preset value for the CRC coprocessor for the CalcCRC command to 0x6363 (ISO 14443-3 part 6.2.4)
-  PCD_WriteRegister(RFCfgReg, (gain<<4));       // Set Rx Gain to max
+PCD_SetAntennaGain(gain);	
   PCD_AntennaOn();              // Enable the antenna driver pins TX1 and TX2 (they were disabled by the reset)
 } // End PCD_Init()
 
@@ -272,10 +272,10 @@ byte MFRC522::PCD_GetAntennaGain() {
  * NOTE: Given mask is scrubbed with (0x07<<4)=01110000b as RCFfgReg may use reserved bits.
  */
 void MFRC522::PCD_SetAntennaGain(byte mask) {
-	if (PCD_GetAntennaGain() != mask) {						// only bother if there is a change
+	//if (PCD_GetAntennaGain() != mask) {						// only bother if there is a change
 		PCD_ClearRegisterBitMask(RFCfgReg, (0x07<<4));		// clear needed to allow 000 pattern
 		PCD_SetRegisterBitMask(RFCfgReg, mask & (0x07<<4));	// only set RxGain[2:0] bits
-	}
+	//}
 } // End PCD_SetAntennaGain()
 
 /////////////////////////////////////////////////////////////////////////////////////
